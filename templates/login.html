@@ -38,7 +38,7 @@
                      border-radius: 4px;
                      box-sizing: border-box') }}
                      {% for error in form.email.errors %}
-                     <p>{{ error }}</p>
+                     <p style="color: red; text-align: center;">{{ error }}</p>
                      {% endfor %}
                   </div>
                </div>
@@ -54,7 +54,7 @@
                      border-radius: 4px;
                      box-sizing: border-box') }}
                      {% for error in form.password.errors %}
-                     <p>{{ error }}</p>
+                     <p style="color: red; text-align: center;">{{ error }}</p>
                      {% endfor %}
                   </div>
                </div>
@@ -76,12 +76,11 @@
                   </div>
                </div>
             </form>
+            {% for message in get_flashed_messages() %}
+            <p style="color: red; text-align: center;">Error : {{ message }}</p>
+            {% endfor %}
           </div>
        </div>
-      
-      {% for message in get_flashed_messages() %}
-      <p style="color: red;">Error : {{ message }}</p>
-      {% endfor %}
     </div>
 
     <!-- Optional JavaScript; choose one of the two! -->
