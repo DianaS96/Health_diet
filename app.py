@@ -2,57 +2,47 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, flash, request, url_for, redirect
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user
 import os
-from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
 from forms import Registration_From, Login_From
+from models import User, db
 
 app = Flask(__name__)
 
+#The database URI that should be used for the connection.
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# creating LoginManager class - this lets my application and Flask-Login work together
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-#init SQLAlchemy
-db = SQLAlchemy()
 db.init_app(app)
+
+#create the USER table and database
 @app.before_first_request
 def create_table():
     db.create_all(app=app)
-SECRET_KEY = os.urandom(32)
 
+# Info about SECRET_KEY usage: https://flask.palletsprojects.com/en/2.1.x/config/
+# Flask-Login uses sessions for authentication,
+# secret key is used to encrypting the cookies in session,
+# the user could look at the contents of cookie but not modify it,
+# unless they know the secret key used for signing.
+SECRET_KEY = os.urandom(32)
 app.config['SECRET_KEY'] = SECRET_KEY
 
-# creating LoginManager class - this lets my application and Flask-Login work together
-
-class User(UserMixin, db.Model):
-    # create field 'id'
-    id = db.Column(db.Integer, primary_key=True)
-    # create field 'username' (string with the max size of 50 chars)
-    username = db.Column(db.String(50), index=True, unique=True)
-    # create field 'email' (string with the max size of 50 chars)
-    email = db.Column(db.String(50), index=True, unique=True)
-
-    pswd_hash = db.Column(db.String(50))
-    date_joined = db.Column(db.DateTime(), default=datetime.utcnow, index=True)
-
-    def set_pswd(self, password):
-        self.pswd_hash = generate_password_hash(password)
-
-    def check_pswd(self, password):
-        return (check_password_hash(self.pswd_hash, password))
-
+# A user loader tells Flask-Login how to get a specific user object
+# from the ID that is stored in the session cookie
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
 
+# Returning homepage template
 @app.route('/')
 @app.route('/index')
 def home():
     return render_template('index.html')
 
-
+# Register
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     form = Registration_From()
@@ -69,6 +59,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('registration.html', form=form)
 
+# Login
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     form = Login_From()
@@ -81,6 +72,7 @@ def login():
         flash("Invalid email or password!")
     return render_template('login.html', form=form)
 
+# Logout
 @app.route('/logout', methods=['POST', 'GET'])
 #@login_required
 def logout():
