@@ -16,3 +16,13 @@ img {
     background-color: #333333;
     text-transform: uppercase;
 }
+
+.products_table {
+    border: 1px solid black;
+    background-color: rgba(256, 256, 256, 0.5);
+}
+
+.products_table_center {
+    margin-left: auto;
+    margin-right: auto;
+}
