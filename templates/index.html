@@ -2,6 +2,9 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen, projection">
+
     <title></title>
   </head>
   <body>
@@ -12,7 +15,40 @@
       {% else %}
       <p>Welcome, {{ current_user.username}}</p>
       <a href="{{ url_for('logout') }}">Logout</a>
-      {% endif %}
+      <table class="products_table_center">
+        <tr class="products_table">
+            <th class="products_table">Тип</th>
+            <th class="products_table">Продукт</th>
+            <th class="products_table">Калорийность</th>
+            <th class="products_table">Белки</th>
+            <th class="products_table">Жиры</th>
+            <th class="products_table">Углеводы</th>
+        </tr>  
+        {% for pr in prod %}
+        <tr class="products_table">
+            <td class="products_table" style="text-align: left;">
+                {{pr['type']}}
+            </td>
+            <td class="products_table" style="text-align: left;">
+                {{pr['product']}}
+            </td>
+            <td class="products_table">
+                {{pr['calories']}}
+            </td>
+            <td class="products_table">
+                {{pr['proteins']}}
+            </td>
+            <td class="products_table">
+                {{pr['fats']}}
+            </td>
+            <td class="products_table">
+                {{pr['carbohydrates']}}
+            </td>
+        </tr>
+        {%endfor%}
+      </table>
+      {%endif%}
+      <div></div>
     </div>
   </body>
 </html>

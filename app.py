@@ -4,6 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, current_user, logou
 import os
 from forms import Registration_From, Login_From
 from models import User, db
+import sqlite3
 
 app = Flask(__name__)
 
@@ -36,11 +37,19 @@ app.config['SECRET_KEY'] = SECRET_KEY
 def load_user(user_id):
     return User.query.get(user_id)
 
+def get_products_connected():
+    conn = sqlite3.connect('products.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
 # Returning homepage template
 @app.route('/')
 @app.route('/index')
 def home():
-    return render_template('index.html')
+    conn = get_products_connected()
+    prod = conn.execute('SELECT * FROM products').fetchall()
+    conn.close()
+    return render_template('index.html', prod=prod)
 
 # Register
 @app.route('/register', methods=['POST', 'GET'])

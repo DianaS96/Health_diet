@@ -9,6 +9,7 @@ df[['Fats', 'Measure_fats']] = df['Жиры'].str.split(' ', expand=True)
 df[['Carbohydrates', 'Measure_carb']] = df['Углеводы'].str.split(' ', expand=True)
 df = df.drop(columns=['Калорийность', 'Белки', 'Жиры', 'Углеводы'])
 
+df['Product'] = df['Продукт']
 df['Calories'] = df['Calories'].str.replace(',', '.')
 df['Proteins'] = df['Proteins'].str.replace(',', '.')
 df['Fats'] = df['Fats'].str.replace(',', '.')
@@ -26,7 +27,7 @@ conn = sqlite3.connect('products')
 c = conn.cursor()
 
 c.execute('CREATE TABLE IF NOT EXISTS products '
-          '(product, '
+          '(type, product, '
           'calories, measure_kkal,'
           'proteins, measure_prot,'
           'fats, Measure_fats,'
@@ -34,7 +35,7 @@ c.execute('CREATE TABLE IF NOT EXISTS products '
 
 conn.commit()
 """
-data = pd.DataFrame(df, columns=['Продукт', 'Calories', 'Measure_kkal',
+data = pd.DataFrame(df, columns=['Type', 'Product', 'Calories', 'Measure_kkal',
                                  'Proteins', 'Measure_prot',
                                  'Fats', 'Measure_fats',
                                  'Carbohydrates', 'Measure_carb'])
