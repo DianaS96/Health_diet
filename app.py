@@ -109,7 +109,7 @@ def diary():
     form.product.choices = [product['product'] for product in filter(lambda c: c[0] == "Баранина_и_дичь", prod_type)]
     conn.close()
     if request.method == "POST":
-        return '<h1>Type: {}; Product: {} </h1>'.format(form.type.data, form.product.data)
+        return '<h1>Type: {}; Product: {}; Amount: {} </h1>'.format(form.type.data, form.product.data, form.amount.data)
     return render_template('diary.html', form=form)
 
 @app.route('/product/<types>', methods=['POST', 'GET'])
