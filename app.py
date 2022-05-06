@@ -106,11 +106,10 @@ def diary():
     prod = conn.execute('SELECT DISTINCT(type) FROM products').fetchall()
     prod_type = conn.execute('SELECT type, product FROM products').fetchall()
     form.type.choices += [item['type'] for item in prod]
-    form.product.choices = [product['product'] for product in filter(lambda c: c[0] == "Бобовые", prod_type)]
+    form.product.choices = [product['product'] for product in filter(lambda c: c[0] == "Баранина_и_дичь", prod_type)]
     conn.close()
     if request.method == "POST":
-        pr = filter(lambda c: c[0] == "Бобовые", prod_type)
-        return '<h1>Type: {}; Product: {} <\h1>'.format(form.type.data, next(pr)['product'])
+        return '<h1>Type: {}; Product: {} </h1>'.format(form.type.data, form.product.data)
     return render_template('diary.html', form=form)
 
 @app.route('/product/<types>', methods=['POST', 'GET'])
@@ -125,7 +124,7 @@ def product(types):
         prObj['product'] = pr['product']
         prod_arr.append(prObj)
 
-    return flask.json.jsonify({'types':prod_arr})
+    return flask.json.jsonify({'prod_arr':prod_arr})
 
 if __name__ == "__main__":
     app.run(host="localhost", port=8000)

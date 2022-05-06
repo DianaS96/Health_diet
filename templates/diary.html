@@ -41,16 +41,29 @@
 				{{ form.product }}
 				<input type="submit">
 			</form>
-	  <!--<form action="", method="post">
-		<select name="option">
-			{% for pr in prod %}
-			<option value="{{pr['product']}}">{{pr['product']}}</option>
-			{%endfor%}
-		</select>-->
-				
-			</form>
-		</div>
+			<script>
+				let type_select = document.getElementById('type');
+				let product_select = document.getElementById('product');
 
+				type_select.onchange = function() {
+					type = type_select.value;
+					alert(type);
+					fetch('/product/' + type).then(function(response) {
+						response.json().then(function(data) {
+							console.table(data);
+							let optionHTML = '';
+							for (let product of data.prod_arr) {
+								optionHTML += '<option value ="' + product.product + '">' + product.product + '</option>';
+							}
+
+							product_select.innerHTML = optionHTML;
+
+						});
+					});
+					//alert(type);
+				}
+			</script>
+		</div>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
 	</body>
