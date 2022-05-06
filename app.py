@@ -2,7 +2,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, flash, request, url_for, redirect
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user
 import os
-from forms import Registration_From, Login_From
+
+import forms
+from forms import Registration_From, Login_From, Select_product
 from models import User, db
 import sqlite3
 
@@ -46,10 +48,12 @@ def get_products_connected():
 @app.route('/')
 @app.route('/index')
 def home():
+    form = Select_product()
     conn = get_products_connected()
-    prod = conn.execute('SELECT * FROM products').fetchall()
+    prod = conn.execute('SELECT DISTINCT(type) FROM products').fetchall()
+    form.type.choices += [item['type'] for item in prod]
     conn.close()
-    return render_template('index.html', prod=prod)
+    return render_template('index.html', form=form)
 
 # Register
 @app.route('/register', methods=['POST', 'GET'])

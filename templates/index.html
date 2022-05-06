@@ -15,6 +15,18 @@
       {% else %}
       <p>Welcome, {{ current_user.username}}</p>
       <a href="{{ url_for('logout') }}">Logout</a>
+      <form method="post">
+          {{ form.type }}
+          <input type="submit">
+      </form>
+      <!--<form action="", method="post">
+        <select name="option">
+            {% for pr in prod %}
+            <option value="{{pr['product']}}">{{pr['product']}}</option>
+            {%endfor%}
+        </select>-->
+
+      </form>
       <table class="products_table_center">
         <tr class="products_table">
             <th class="products_table">Тип</th>
@@ -23,8 +35,9 @@
             <th class="products_table">Белки</th>
             <th class="products_table">Жиры</th>
             <th class="products_table">Углеводы</th>
-        </tr>  
-        {% for pr in prod %}
+        <!--
+ </tr>  
+               {% for pr in prod %}
         <tr class="products_table">
             <td class="products_table" style="text-align: left;">
                 {{pr['type']}}
@@ -45,7 +58,7 @@
                 {{pr['carbohydrates']}}
             </td>
         </tr>
-        {%endfor%}
+        {%endfor%}-->
       </table>
       {%endif%}
       <div></div>
