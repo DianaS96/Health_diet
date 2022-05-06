@@ -1,6 +1,7 @@
+import flask.json
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, flash, request, url_for, redirect
-from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user
+from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
 import os
 
 import forms
@@ -13,6 +14,7 @@ app = Flask(__name__)
 #The database URI that should be used for the connection.
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JSON_AS_ASCII'] = False
 
 # creating LoginManager class - this lets my application and Flask-Login work together
 login_manager = LoginManager()
@@ -48,12 +50,7 @@ def get_products_connected():
 @app.route('/')
 @app.route('/index')
 def home():
-    form = Select_product()
-    conn = get_products_connected()
-    prod = conn.execute('SELECT DISTINCT(type) FROM products').fetchall()
-    form.type.choices += [item['type'] for item in prod]
-    conn.close()
-    return render_template('index.html', form=form)
+    return render_template('index.html')
 
 # Register
 @app.route('/register', methods=['POST', 'GET'])
@@ -87,10 +84,48 @@ def login():
 
 # Logout
 @app.route('/logout', methods=['POST', 'GET'])
-#@login_required
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+@app.route('/products_table', methods=['POST', 'GET'])
+@login_required
+def products_table():
+    conn = get_products_connected()
+    prod = conn.execute('SELECT * FROM products').fetchall()
+    conn.close()
+    return render_template('products_table.html', prod=prod)
+
+@app.route('/diary', methods=['POST', 'GET'])
+#@login_required
+def diary():
+    form = Select_product()
+    conn = get_products_connected()
+    prod = conn.execute('SELECT DISTINCT(type) FROM products').fetchall()
+    prod_type = conn.execute('SELECT type, product FROM products').fetchall()
+    form.type.choices += [item['type'] for item in prod]
+    form.product.choices = [product['product'] for product in filter(lambda c: c[0] == "Бобовые", prod_type)]
+    conn.close()
+    if request.method == "POST":
+        pr = filter(lambda c: c[0] == "Бобовые", prod_type)
+        return '<h1>Type: {}; Product: {} <\h1>'.format(form.type.data, next(pr)['product'])
+    return render_template('diary.html', form=form)
+
+@app.route('/product/<types>', methods=['POST', 'GET'])
+def product(types):
+    conn = get_products_connected()
+    prod = conn.execute('SELECT product FROM products WHERE type={goal}'.format(goal=f'"{types}"')).fetchall()
+
+    prod_arr = []
+
+    for pr in prod:
+        prObj = {}
+        prObj['product'] = pr['product']
+        prod_arr.append(prObj)
+
+    return flask.json.jsonify({'types':prod_arr})
 
 if __name__ == "__main__":
     app.run(host="localhost", port=8000)
