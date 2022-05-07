@@ -36,3 +36,14 @@ img {
     width: 15vw;
     text-overflow: ellipsis;
 }
+
+th, td {
+    word-break: break-word; /*or you can use word-break:break-all*/
+    min-width: 50px; /*set min-width as needed*/
+}
+
+.PFC_map {
+    font-style: italic; 
+    margin-top:0.5rem; 
+    margin-bottom:0.3rem;
+}

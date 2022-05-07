@@ -22,13 +22,13 @@
 					</li>
 					{% else %}
 					<li class="nav-item active">
-						<a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-					</li>
-					<li class="nav-item active">
 						<a class="nav-link" href="{{ url_for('products_table') }}">Calories table</a>
 					</li>
 					<li class="nav-item active">
 						<a class="nav-link" href="{{ url_for('diary') }}">Diary</a>
+					</li>
+					<li class="nav-item active">
+						<a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
 					</li>
 					{%endif%}
 				</ul>
@@ -86,15 +86,20 @@
 				</div>
 			</div>
 
+			<div class="container">
 			{% if user is defined %}
+			<p class='PFC_map' style="font-style: italic;"> * P - Proteins, F - Fats, C -Carbohydrates</p>
 				<table>
 					<tr class="products_table">
-						<th class="products_table">Имя пользователя</th>
-						<th class="products_table">дата</th>
-						<th class="products_table">Прием пищи</th>
-						<th class="products_table">Тип продукта</th>
-						<th class="products_table">Продукт</th>
-						<th class="products_table">Количество, г.</th>
+						<th class="products_table">Username</th>
+						<th class="products_table">Date</th>
+						<th class="products_table">Meal</th>
+						<th class="products_table">Product</th>
+						<th class="products_table">Amount, g.</th>
+						<th class="products_table">kcals</th>
+						<th class="products_table">P</th>
+						<th class="products_table">F</th>
+						<th class="products_table">C</th>
 					</tr>  
 					{% for u in user %}
 					<tr class="products_table">
@@ -102,13 +107,10 @@
 							{{u.user}}
 						</td>
 						<td class="products_table" style="text-align: left;">
-							{{u.date}}
+							{{u.date_str}}
 						</td>
 						<td class="products_table">
 							{{u.meal}}
-						</td>
-						<td class="products_table">
-							{{u.type}}
 						</td>
 						<td class="products_table">
 							{{u.product}}
@@ -116,11 +118,23 @@
 						<td class="products_table">
 							{{u.amount}}
 						</td>
+						<td class="products_table">
+							{{u.calories}}
+						</td>
+						<td class="products_table">
+							{{u.proteins}}
+						</td>
+						<td class="products_table">
+							{{u.fats}}
+						</td>
+						<td class="products_table">
+							{{u.carbohydrates}}
+						</td>
 					</tr>
 					{% endfor %}
 				</table>
 				{% endif %}
-			
+			</div>
 			<script>
 				let type_select = document.getElementById('type');
 				let product_select = document.getElementById('product');

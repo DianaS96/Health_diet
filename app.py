@@ -3,12 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, flash, request, url_for, redirect
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
 import os
-
 import forms
 from forms import Registration_From, Login_From, Select_product
 from models import User, db, Users_info
 import sqlite3
-
+from datetime import datetime, date
+import pandas as pd
 app = Flask(__name__)
 
 #The database URI that should be used for the connection.
@@ -111,21 +111,29 @@ def diary():
     prod_type = conn.execute('SELECT type, product FROM products').fetchall()
     form.type.choices += [item['type'] for item in prod]
     form.product.choices = [product['product'] for product in filter(lambda c: c[0] == "Баранина_и_дичь", prod_type)]
-    conn.close()
     d = None
     #if form.validate_on_submit():
     if request.method == "POST" and form.is_submitted():
+       # prod = conn.execute('SELECT product FROM products WHERE type={goal}'.format(goal=f'"{types}"')).fetchall()
+        cals = conn.execute('SELECT * FROM products WHERE type={goal} and product={goal1}'.format(goal=f'"{form.type.data}"', goal1=f'"{form.product.data}"')).fetchone()
+
         user_info = Users_info(meal=form.meal.data,
                                user=current_user.username,
                                date=form.date.data,
+                               date_str=form.date.data.strftime('%d-%m-%Y'),
                                type=form.type.data,
                                product=form.product.data,
-                               amount=form.amount.data)
+                               amount=form.amount.data,
+                               calories=round(float(cals['calories']) * float(form.amount.data) / 100, 2),
+                               proteins=round(float(cals['proteins']) * float(form.amount.data) / 100, 2),
+                               fats=round(float(cals['fats']) * float(form.amount.data) / 100, 2),
+                               carbohydrates=round(float(cals['carbohydrates']) * float(form.amount.data) / 100, 2))
         db.session.add(user_info)
         db.session.commit()
         print(form.meal.data)
         print(form.date.data)
-        d = Users_info.query.filter_by(user=current_user.username).all()
+        d = Users_info.query.filter_by(user=current_user.username).order_by(Users_info.date.desc()).all()
+        conn.close()
         return render_template('diary.html', form=form, user=d)
     #else:
      #   return 'WTF?'
