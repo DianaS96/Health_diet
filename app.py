@@ -6,13 +6,16 @@ import os
 
 import forms
 from forms import Registration_From, Login_From, Select_product
-from models import User, db
+from models import User, db, Users_info
 import sqlite3
 
 app = Flask(__name__)
 
 #The database URI that should be used for the connection.
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+app.config['SQLALCHEMY_BINDS'] = {
+    'users_info':   'sqlite:///users_info.db'
+}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_AS_ASCII'] = False
 
@@ -26,6 +29,7 @@ db.init_app(app)
 @app.before_first_request
 def create_table():
     db.create_all(app=app)
+    db.create_all(bind='users_info')
 
 # Info about SECRET_KEY usage: https://flask.palletsprojects.com/en/2.1.x/config/
 # Flask-Login uses sessions for authentication,
@@ -108,8 +112,26 @@ def diary():
     form.type.choices += [item['type'] for item in prod]
     form.product.choices = [product['product'] for product in filter(lambda c: c[0] == "Баранина_и_дичь", prod_type)]
     conn.close()
-    if request.method == "POST":
-        return '<h1>Type: {}; Product: {}; Amount: {} </h1>'.format(form.type.data, form.product.data, form.amount.data)
+    d = None
+    #if form.validate_on_submit():
+    if request.method == "POST" and form.is_submitted():
+        user_info = Users_info(meal=form.meal.data,
+                               user=current_user.username,
+                               date=form.date.data,
+                               type=form.type.data,
+                               product=form.product.data,
+                               amount=form.amount.data)
+        db.session.add(user_info)
+        db.session.commit()
+        print(form.meal.data)
+        print(form.date.data)
+        d = Users_info.query.filter_by(user=current_user.username).all()
+        return render_template('diary.html', form=form, user=d)
+    #else:
+     #   return 'WTF?'
+      #
+  #  if request.method == "POST":
+   #     return '<h1>User: {};  Meal: {}; Date: {}; Amount: {} </h1>'.format(d.user, d.meal, d.date, d.amount)
     return render_template('diary.html', form=form)
 
 @app.route('/product/<types>', methods=['POST', 'GET'])

@@ -23,3 +23,13 @@ class User(UserMixin, db.Model):
 
     def check_pswd(self, password):
         return (check_password_hash(self.pswd_hash, password))
+
+class Users_info(db.Model):
+    __bind_key__ = 'users_info'
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.String(50))
+    meal = db.Column(db.String(50))
+    date = db.Column(db.DateTime)
+    type = db.Column(db.String(500))
+    product = db.Column(db.String(500))
+    amount = db.Column(db.Integer)

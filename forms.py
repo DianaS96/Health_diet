@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, DateField
 from wtforms.validators import DataRequired, Email, EqualTo, NumberRange
 from wtforms.widgets import html_params
 
@@ -18,6 +18,8 @@ class Login_From(FlaskForm):
     submit = SubmitField('Log in')
 
 class Select_product(FlaskForm):
-    type = SelectField('type', choices=[])
-    product = SelectField('product', choices=[])
-    amount = IntegerField('amount', validators=[DataRequired(), NumberRange(min=1, max=1000)])
+    date = DateField('date', validators=[DataRequired('Wrong date')])
+    meal = SelectField('meal', choices=['Breakfast', 'Lunch', 'Dinner', 'Afternoon snack', 'Supper'], validators=[DataRequired('Wrong meal')])
+    type = SelectField('type', choices=[], validators=[DataRequired('Wrong type')])
+    product = SelectField('product', choices=[], validators=[DataRequired('Wrong product')])
+    amount = IntegerField('amount', validators=[DataRequired('Wrong amount'), NumberRange(min=1, max=1000)])
