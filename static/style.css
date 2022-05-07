@@ -32,6 +32,11 @@ img {
     text-overflow: ellipsis;
 }
 
+.select-control_date {
+    width: 100%;
+    text-overflow: ellipsis;
+}
+
 .select-control_small {
     width: 15vw;
     text-overflow: ellipsis;

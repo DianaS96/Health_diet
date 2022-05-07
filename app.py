@@ -4,11 +4,13 @@ from flask import Flask, render_template, flash, request, url_for, redirect
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
 import os
 import forms
-from forms import Registration_From, Login_From, Select_product
+from forms import Registration_From, Login_From, Select_product, Select_date
 from models import User, db, Users_info
 import sqlite3
 from datetime import datetime, date
 import pandas as pd
+from sqlalchemy import func
+
 app = Flask(__name__)
 
 #The database URI that should be used for the connection.
@@ -54,7 +56,7 @@ def get_products_connected():
 @app.route('/')
 @app.route('/index')
 def home():
-    return render_template('index.html')
+    return login()
 
 # Register
 @app.route('/register', methods=['POST', 'GET'])
@@ -102,18 +104,21 @@ def products_table():
     conn.close()
     return render_template('products_table.html', prod=prod)
 
-@app.route('/diary', methods=['POST', 'GET'])
+"""
+"""
+
+
+@app.route('/diary_add', methods=['POST', 'GET'])
 #@login_required
-def diary():
+def diary_add():
     form = Select_product()
     conn = get_products_connected()
     prod = conn.execute('SELECT DISTINCT(type) FROM products').fetchall()
     prod_type = conn.execute('SELECT type, product FROM products').fetchall()
     form.type.choices += [item['type'] for item in prod]
     form.product.choices = [product['product'] for product in filter(lambda c: c[0] == "Баранина_и_дичь", prod_type)]
-    d = None
-    #if form.validate_on_submit():
-    if request.method == "POST" and form.is_submitted():
+
+    if form.submit.data:
        # prod = conn.execute('SELECT product FROM products WHERE type={goal}'.format(goal=f'"{types}"')).fetchall()
         cals = conn.execute('SELECT * FROM products WHERE type={goal} and product={goal1}'.format(goal=f'"{form.type.data}"', goal1=f'"{form.product.data}"')).fetchone()
 
@@ -130,17 +135,45 @@ def diary():
                                carbohydrates=round(float(cals['carbohydrates']) * float(form.amount.data) / 100, 2))
         db.session.add(user_info)
         db.session.commit()
-        print(form.meal.data)
-        print(form.date.data)
-        d = Users_info.query.filter_by(user=current_user.username).order_by(Users_info.date.desc()).all()
-        conn.close()
-        return render_template('diary.html', form=form, user=d)
-    #else:
-     #   return 'WTF?'
-      #
-  #  if request.method == "POST":
-   #     return '<h1>User: {};  Meal: {}; Date: {}; Amount: {} </h1>'.format(d.user, d.meal, d.date, d.amount)
-    return render_template('diary.html', form=form)
+        return redirect(url_for('diary_add', form=form))
+    return render_template('diary_add.html', form=form)
+
+@app.route('/diary_show', methods=['POST', 'GET'])
+#@login_required
+def diary_show():
+
+    form_date = Select_date()
+
+    data_choices = Users_info.query.filter_by(user=current_user.username).all()
+    form_date.date.choices += [item.date_str for item in data_choices]
+
+    if form_date.submit.data:
+        d = Users_info.query.filter_by(user=current_user.username, date_str=form_date.date.data).order_by(Users_info.date.desc()).all()
+    #    conn.close()
+
+        sum_amount = Users_info.query.filter_by(user=current_user.username, date_str=form_date.date.data).\
+            with_entities(func.sum(Users_info.amount).label('total')).first().total
+
+        sum_cal = Users_info.query.filter_by(user=current_user.username, date_str=form_date.date.data).\
+            with_entities(func.sum(Users_info.calories).label('total')).first().total
+
+        sum_prot = Users_info.query.filter_by(user=current_user.username, date_str=form_date.date.data).\
+            with_entities(func.sum(Users_info.proteins).label('total')).first().total
+
+        sum_fats = Users_info.query.filter_by(user=current_user.username, date_str=form_date.date.data).\
+            with_entities(func.sum(Users_info.fats).label('total')).first().total
+
+        sum_co2 = Users_info.query.filter_by(user=current_user.username, date_str=form_date.date.data).\
+            with_entities(func.sum(Users_info.carbohydrates).label('total')).first().total
+
+        return render_template('diary_show.html', date=form_date, user=d,
+                               sum_cal=round(sum_cal, 2),
+                               sum_amount=round(sum_amount, 2),
+                               sum_prot=round(sum_prot, 2),
+                               sum_fats=round(sum_fats, 2),
+                               sum_co2=round(sum_co2, 2))
+    return render_template('diary_show.html', date=form_date)
+
 
 @app.route('/product/<types>', methods=['POST', 'GET'])
 def product(types):

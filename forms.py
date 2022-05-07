@@ -23,3 +23,8 @@ class Select_product(FlaskForm):
     type = SelectField('type', choices=[], validators=[DataRequired('Wrong type')])
     product = SelectField('product', choices=[], validators=[DataRequired('Wrong product')])
     amount = IntegerField('amount', validators=[DataRequired('Wrong amount'), NumberRange(min=1, max=1000)])
+    submit = SubmitField('Add data to diary')
+
+class Select_date(FlaskForm):
+    date = SelectField('date', choices=[], validators=[DataRequired('Wrong date')])
+    submit = SubmitField('View info')
