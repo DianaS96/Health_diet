@@ -35,24 +35,58 @@
 			</div>			
 		</nav>
 
-		<div>
-			<div class="card">
+		<div class="container my-5">>
+			<div class="card" style="border-radius: 2.15rem; background-color: rgba(255, 255, 255, 0.7);">
 				<div class="card-header">
 				  Choose type of product, product and its amount.
 				</div>
 				<div class="card-body">
-				  	<h5 class="card-title">Special title treatment</h5>
-				 	<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
 					<form method="POST">
-						{{ form.date }}
-						{{ form.meal }}
-						{{ form.type }}
-						{{ form.product }}
-						{{ form.amount }}
+						<div class="row my-3">
+							<div class="col-sm-6">
+								<h5 class="card-title">Type of food</h5>
+								{{ form.type(class_="select-control") }}
+							</div>
+							<div class="col-sm-4">
+								<h5 class="card-title">Product</h5>
+								{{ form.product(class_="select-control") }}
+							</div>
+						</div>
+						<div class="row my-3">
+							<div class="col-sm-4">
+								<div class="card" style="border-radius: 2.15rem; opacity: 0.7;">
+									<div class="card-body">
+									<h5 class="card-title">Date</h5>
+									{{ form.date(class_='select-control_small') }}
+									</div>
+								</div>
+							</div>
+
+							<div class="col-sm-4">
+								<div class="card" style="border-radius: 2.15rem; opacity: 0.7;">
+									<div class="card-body">
+									<h5 class="card-title">Meal</h5>
+									{{ form.meal(class_='select-control_small') }}
+									</div>
+								</div>
+							</div>
+
+							<div class="col-sm-4">
+								<div class="card" style="border-radius: 2.15rem; opacity: 0.7;">
+									<div class="card-body">
+									<h5 class="card-title">Amount, g</h5>
+									{{ form.amount(class_='select-control_small') }}
+									</div>
+								</div>
+							</div>
+
+						</div>
 						<input type="submit">
 					</form>
 				</div>
-				{% if user is defined %}
+			</div>
+
+			{% if user is defined %}
 				<table>
 					<tr class="products_table">
 						<th class="products_table">Имя пользователя</th>
@@ -86,7 +120,6 @@
 					{% endfor %}
 				</table>
 				{% endif %}
-			</div>
 			
 			<script>
 				let type_select = document.getElementById('type');

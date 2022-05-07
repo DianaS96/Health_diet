@@ -26,3 +26,13 @@ img {
     margin-left: auto;
     margin-right: auto;
 }
+
+.select-control {
+    width: 30vw;
+    text-overflow: ellipsis;
+}
+
+.select-control_small {
+    width: 15vw;
+    text-overflow: ellipsis;
+}
