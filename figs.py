@@ -1,9 +1,8 @@
 import plotly as py
-import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import json
 import pandas as pd
+import sqlite3
 
 
 def get_PFC_stat_daily(sum_prot, sum_fats, sum_co2, date):
@@ -41,3 +40,45 @@ def get_stats_by_type_daily(type_amount_per_day, date):
     graphJSON = json.dumps(fig, cls=py.utils.PlotlyJSONEncoder)
 
     return (graphJSON)
+
+def get_table_with_dropdown_menu():
+    dat = sqlite3.connect('products.db')
+    query = dat.execute('SELECT * FROM products')
+    cols = [column[0] for column in query.description]
+    results = pd.DataFrame.from_records(data=query.fetchall(), columns=cols)
+    dat.close()
+
+    results = results.drop(columns=['Measure_kkal', 'Measure_prot', 'Measure_fats', 'Measure_carb'])
+
+    fig = go.Figure(go.Table(header={'values': results.columns}, cells={'values': results.T.values}))
+
+    fig.update_layout(
+        updatemenus=[
+            {
+                'buttons': [
+                    {
+                        'label': c,
+                        'method': 'update',
+                        'args': [
+                            {
+                                'cells': {
+                                    'values': results.T.values
+                                    if c == 'ALL'
+                                    else results.loc[results['Type'].eq(c)].T.values
+                                }
+                            }
+                        ],
+                    }
+                    for c in ['All'] + results['Type'].unique().tolist()
+                ],
+                "x": 0,
+                "xanchor": "left",
+                "y": 1.2,
+                "yanchor": "top"
+            }
+        ]
+    )
+    #    fig.show()
+    graphJSON = json.dumps(fig, cls=py.utils.PlotlyJSONEncoder)
+
+    return graphJSON

@@ -1,22 +1,12 @@
 import flask.json
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, flash, request, url_for, redirect
-from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
+from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 import os
-import forms
 from forms import Registration_From, Login_From, Select_product, Select_date
 from models import User, db, Users_info
 import sqlite3
-from datetime import datetime, date
-import pandas as pd
-from sqlalchemy import func
-import plotly as py
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import json
 from utils import get_totals_PFC
-from figs import get_PFC_stat_daily, get_stats_by_type_daily
+from figs import get_PFC_stat_daily, get_stats_by_type_daily, get_table_with_dropdown_menu
 
 app = Flask(__name__)
 
@@ -115,9 +105,7 @@ def logout():
 @app.route('/products_table', methods=['POST', 'GET'])
 @login_required
 def products_table():
-    conn = get_products_connected()
-    prod = conn.execute('SELECT * FROM products').fetchall()
-    conn.close()
+    prod=get_table_with_dropdown_menu()
     return render_template('products_table.html', prod=prod)
 
 
@@ -148,6 +136,12 @@ def diary_add():
                                carbohydrates=round(float(cals['carbohydrates']) * float(form.amount.data) / 100, 2))
         db.session.add(user_info)
         db.session.commit()
+        msg_flash = f'You just added product to the diary!\n'\
+                  f'({form.date.data.strftime("%d-%m-%Y")}, '\
+                  f'{form.product.data}, '\
+                  f'{form.amount.data} g)'
+
+        flash(msg_flash)
         return redirect(url_for('diary_add', form=form))
     return render_template('diary_add.html', form=form)
 

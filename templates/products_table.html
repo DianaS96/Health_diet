@@ -10,6 +10,9 @@
 
     <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen, projection">
 
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"> </script>
+
     <title>Calories Table</title>
   </head>
     <!-- As a link -->
@@ -40,41 +43,18 @@
     </nav>
 
     <body>
-        <div>
-          <table class="products_table_center">
-            <tr class="products_table">
-                <th class="products_table">Тип</th>
-                <th class="products_table">Продукт</th>
-                <th class="products_table">Калорийность</th>
-                <th class="products_table">Белки</th>
-                <th class="products_table">Жиры</th>
-                <th class="products_table">Углеводы</th>
-            </tr>  
-            {% for pr in prod %}
-            <tr class="products_table">
-                <td class="products_table" style="text-align: left;">
-                    {{pr['type']}}
-                </td>
-                <td class="products_table" style="text-align: left;">
-                    {{pr['product']}}
-                </td>
-                <td class="products_table">
-                    {{pr['calories']}}
-                </td>
-                <td class="products_table">
-                    {{pr['proteins']}}
-                </td>
-                <td class="products_table">
-                    {{pr['fats']}}
-                </td>
-                <td class="products_table">
-                    {{pr['carbohydrates']}}
-                </td>
-            </tr>
-            {%endfor%}
-          </table>
-          <div></div>
-        </div>
+        {% if prod is defined%}
+			
+			<div class = "divider py-1 text-center text-white bg-dark" style="margin-top:1rem">Statistics</div>
+			<div class="table_products" id="table_products">
+					<script>
+		//					var layout = { title : "Products", xaxis : {title: "Date+Time",dtick: 1,type: 'category' }, yaxis :{title: "whatever"}}
+						//	var graphs = {{plot_pie_chart_products|safe}};
+						Plotly.newPlot("table_products", {{ prod | safe }})
+					</script>
+			</div>
+		{%endif%}
+
       </body>
     <!-- Optional JavaScript; choose one of the two! -->
 

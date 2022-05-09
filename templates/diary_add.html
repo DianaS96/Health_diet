@@ -41,7 +41,7 @@
 		<div class="container my-5">>
 			<div class="card" style="border-radius: 2.15rem; background-color: rgba(255, 255, 255, 0.7);">
 				<div class="card-header">
-				  Choose type of product, product and its amount.
+				  Select type of product, product, date of meal, meal and its amount.
 				</div>
 				<div class="card-body">
 					<form method="POST">
@@ -96,6 +96,9 @@
 						 </div>
 					</form>
 				</div>
+				{% for message in get_flashed_messages() %}
+				<h4 style="color: rgb(93, 50, 20); text-align: center;">{{ message }}</h4>>
+            {% endfor %}
 			</div>
 			<script>
 				let type_select = document.getElementById('type');
