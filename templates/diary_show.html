@@ -157,25 +157,27 @@
 			</div>
 
 			{% if plot_pie_chart_products is defined and plot_pie_chart_pfc is defined%}
+			
 			<div class = "divider py-1 text-center text-white bg-dark">Plotly data</div>
-      		<div class="pie" id="pie">
-				<div class="pie" id="pie">
-				<script>
-//					var layout = { title : "Products", xaxis : {title: "Date+Time",dtick: 1,type: 'category' }, yaxis :{title: "whatever"}}
-					var graphs = {{plot_pie_chart_products|safe}};
-					Plotly.plot('pie',graphs);
-				</script>
-				<div class="pie" id="pie">
-					<script>
-	//					var layout = { title : "Products", xaxis : {title: "Date+Time",dtick: 1,type: 'category' }, yaxis :{title: "whatever"}}
-						var graphs = {{plot_pie_chart_pfc|safe}};
-						Plotly.plot('pie',graphs);
-					</script>
-					
+			<div class="row my-3" style="background-color: rgba(255, 255, 255, 0.5);">
+				<div class="col-md-6">
+					<div class="pie_type" id="pie_type">
+						<script>
+		//					var layout = { title : "Products", xaxis : {title: "Date+Time",dtick: 1,type: 'category' }, yaxis :{title: "whatever"}}
+						//	var graphs = {{plot_pie_chart_products|safe}};
+							Plotly.newPlot("pie_type", {{ plot_pie_chart_products | safe }})
+						</script>
+					</div>
 				</div>
-				
-			</div>
-				
+				<div class="col-md-6">
+					<div class="pie_pfc" id="pie_pfc">
+						<script>
+			//					var layout = { title : "Products", xaxis : {title: "Date+Time",dtick: 1,type: 'category' }, yaxis :{title: "whatever"}}
+					//			var graphs = {{plot_pie_chart_pfc|safe}};
+							Plotly.newPlot("pie_pfc", {{ plot_pie_chart_pfc | safe }})
+						</script>				
+					</div>
+				</div>
 			</div>
 			{%endif%}
 

@@ -16,6 +16,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import json
 from utils import get_totals_PFC
+from figs import get_PFC_stat_daily, get_stats_by_type_daily
 
 app = Flask(__name__)
 
@@ -157,8 +158,9 @@ def diary_show():
 
     form_date = Select_date()
 
-    data_choices = Users_info.query.filter_by(user=current_user.username).all()
+    data_choices = Users_info.query.filter_by(user=current_user.username).order_by(Users_info.date.desc()).all()
     form_date.date.choices += [item.date_str for item in data_choices]
+    form_date.date.choices = list(dict.fromkeys(form_date.date.choices))
 
     if form_date.submit.data:
         d = Users_info.query.filter_by(user=current_user.username, date_str=form_date.date.data).order_by(Users_info.date.desc()).all()
@@ -166,45 +168,13 @@ def diary_show():
 
         sum_amount, sum_cal, sum_prot, sum_fats, sum_co2 = get_totals_PFC(form_date)
 
-        product_amount_per_day = db.session.query(Users_info.product, db.func.sum(Users_info.amount)).\
-            filter_by(user=current_user.username, date_str=form_date.date.data).\
-            group_by(Users_info.product).all()
-
         type_amount_per_day = db.session.query(Users_info.type, db.func.sum(Users_info.amount)).\
             filter_by(user=current_user.username, date_str=form_date.date.data).\
             group_by(Users_info.type).all()
 
-        df_product = pd.DataFrame(data=product_amount_per_day, columns=['Product', 'Amount'])
-        df_type = pd.DataFrame(data=type_amount_per_day, columns=['Type', 'Amount'])
-        print(df_type)
+        graphJSON = get_stats_by_type_daily(type_amount_per_day=type_amount_per_day, date=form_date.date.data)
 
-        fig = make_subplots(rows=1, cols=1, specs=[[{'type':'domain'}]])
-
-        fig.add_trace(go.Pie(labels=df_type['Type'],
-                             values=df_type['Amount'],
-                             name='Breakdown by type of product', legendgroup=1), 1, 1)
-        #fig.add_trace(go.Pie(labels=df_product['Product'],
-         #                    values=df_product['Amount'],
-          #                   name='Breakdown by product', legendgroup=2), 1, 2)
-
-        fig.update_traces(hole=.4, hoverinfo="label+percent+name")
-
-        fig.update_layout(
-            title_text="Breakdown of meals by type and product, %",
-            # Add annotations in the center of the donut pies.
-            annotations=[dict(text='Type', x=0.18, y=0.5, font_size=20, showarrow=False)])
-
-        graphJSON = json.dumps(fig, cls=py.utils.PlotlyJSONEncoder)
-
-        sum_PFC = sum_prot + sum_cal + sum_co2
-
-        labels = ['Proteins', 'Fats', 'Carbohydrates']
-        values = [(round(float(sum_prot / sum_PFC), 2)),
-                  (round(float(sum_fats / sum_PFC), 2)),
-                  (round(float(sum_co2 / sum_PFC), 2))]
-
-        fig1 = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3)])
-        graphJSON1 = json.dumps(fig1, cls=py.utils.PlotlyJSONEncoder)
+        graphJSON1 = get_PFC_stat_daily(sum_prot=sum_prot, sum_fats=sum_fats, sum_co2=sum_co2, date=form_date.date.data)
 
         return render_template('diary_show.html', date=form_date, user=d,
                                sum_cal=round(sum_cal, 2),
