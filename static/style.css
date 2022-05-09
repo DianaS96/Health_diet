@@ -52,3 +52,14 @@ th, td {
     margin-top:0.5rem; 
     margin-bottom:0.3rem;
 }
+
+.carousel-item img {
+    max-height: 500px; /* input your desired height here */
+  }
+
+.carousel_container {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: rgba(256, 256, 256, 0.5);
+}
