@@ -1,4 +1,4 @@
-# Health_diet
+# Health_diet :poultry_leg:	:green_salad:	:pizza:	
 
 ## Description
 
@@ -57,3 +57,5 @@ Simple calorie and PFC (proteins, fats, carbohydrates) tracking web application 
 * Clone this repo
 * Install all necessary packages (see file requirements.txt)
 * run **`app.py`**
+
+*P.s. there is already test user info in databases (email: test@gmail.com, password: test).*
