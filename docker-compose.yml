@@ -1,0 +1,14 @@
+version: "3.10"
+
+services:
+  # location of Flask application Dockerfile
+  myapp:
+    build:
+      context: ./
+    # Docker image name
+    image: food
+    # Container name
+    container_name: PFC_tracker
+    # this key maps flask application port 8000 to port 8000
+    ports:
+      - 8000:8000

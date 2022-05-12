@@ -117,6 +117,7 @@ def diary_add():
     prod = conn.execute('SELECT DISTINCT(type) FROM products').fetchall()
     prod_type = conn.execute('SELECT type, product FROM products').fetchall()
     form.type.choices += [item['type'] for item in prod]
+    form.type.choices.sort()
     form.product.choices = [product['product'] for product in filter(lambda c: c[0] == "Баранина_и_дичь", prod_type)]
 
     if form.submit.data:
@@ -197,4 +198,4 @@ def product(types):
 
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=8000)
+    app.run(host="0.0.0.0", port=8000)
