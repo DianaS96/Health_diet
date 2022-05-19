@@ -43,7 +43,7 @@ Simple calorie and PFC (proteins, fats, carbohydrates) tracking web application 
 * HTML
 * CSS
 * <a href='https://getbootstrap.com/'>Bootstrap</a>
-* <a href='https://www.docker.com/'>Bootstrap</a>
+* <a href='https://www.docker.com/'>Docker</a>
 * SQL
 
 ## Usage
